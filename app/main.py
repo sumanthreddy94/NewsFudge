@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from app.api.services.news_fetcher import get_sources
 
 app = FastAPI(
     title="NewsFudge",
@@ -10,4 +10,11 @@ app = FastAPI(
 @app.get("/")
 def root():
     return {"message":"Welcome to News Fudge"}
+
+@app.get("/sources")
+async def sources():
+    return await get_sources()
+
+
+
 
