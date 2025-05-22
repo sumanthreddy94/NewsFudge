@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-
+from app.api.services.news_fetcher import fetch_top_headlines, fetch_everything, fetch_sources
+from app.tasks.daily_fetch import fetch_and_store_last_30_days
+from app.tasks.data_ingest import load_articles_from_directory
 
 app = FastAPI(
     title="NewsFudge",
@@ -10,4 +12,48 @@ app = FastAPI(
 @app.get("/")
 def root():
     return {"message":"Welcome to News Fudge"}
+
+@app.get("/sources")
+async def get_news_sources(category: str = None, language: str = "en", country: str = "us"):
+    return fetch_sources(category=category, language=language, country=country)
+
+@app.get("/headlines")
+async def get_headlines(
+    q: str = None,
+    sources: str = None,
+    category: str = None,
+    language: str = "en",
+    country: str = "us"
+):
+    return await fetch_top_headlines(q=q, sources=sources, category=category, language=language, country=country)
+
+@app.get("/everything")
+async def get_all_articles(
+    q: str,
+    sources: str = None,
+    domains: str = None,
+    from_param: str = None,
+    to: str = None,
+    language: str = "en",
+    sort_by: str = "relevancy",
+    page: int = 1
+):
+    return await fetch_everything(
+        q=q,
+        sources=sources,
+        domains=domains,
+        from_param=from_param,
+        to=to,
+        language=language,
+        sort_by=sort_by,
+        page=page
+    )
+
+@app.on_event(event_type="startup")
+async def startup_event():
+    print("Starting scheduled fetch...")
+    await load_articles_from_directory()
+
+
+
 
