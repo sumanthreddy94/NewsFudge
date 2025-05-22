@@ -41,7 +41,7 @@ async def fetch_top_headlines(
 
 # /v2/everything
 async def fetch_everything(
-    q: str,
+    q: str="Technology",
     sources: str = None,
     domains: str = None,
     from_param: str = None,
@@ -50,9 +50,10 @@ async def fetch_everything(
     sort_by: str = "relevancy",
     page: int = 1
 ):
-    today = datetime.date.today()
-    from_param = str(today - datetime.timedelta(days=7))
-    to = str(today)
+    if not from_param or not to:    
+        today = datetime.date.today()
+        from_param = str(today - datetime.timedelta(days=30))
+        to = str(today)
     return newsapi.get_everything(
         q=q,
         sources=sources,

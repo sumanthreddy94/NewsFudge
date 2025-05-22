@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from app.api.services.news_fetcher import fetch_top_headlines, fetch_everything, fetch_sources
+from app.tasks.daily_fetch import fetch_and_store_last_30_days
+from app.tasks.data_ingest import load_articles_from_directory
 
 app = FastAPI(
     title="NewsFudge",
@@ -46,6 +48,11 @@ async def get_all_articles(
         sort_by=sort_by,
         page=page
     )
+
+@app.on_event(event_type="startup")
+async def startup_event():
+    print("Starting scheduled fetch...")
+    await load_articles_from_directory()
 
 
 
