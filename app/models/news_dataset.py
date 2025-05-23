@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from datetime import datetime
 
 
@@ -20,41 +20,45 @@ class SocialStats(BaseModel):
 
 class Thread(BaseModel):
     uuid: str
-    url: HttpUrl
+    url: Optional[str] = None
     site_full: str
     site: str
-    site_section: Optional[HttpUrl]
+    site_section: Optional[str] = None
     site_categories: List[str]
-    section_title: Optional[str]
+    section_title: Optional[str] = None
     title: str
     title_full: str
     published: datetime
     replies_count: int
     participants_count: int
     site_type: str
-    country: str
-    main_image: Optional[HttpUrl]
+    country: Optional[str]
+    main_image: Optional[str] = None
     performance_score: int
     domain_rank: int
     domain_rank_updated: datetime
-    reach: Optional[int]
+    reach: Optional[int] = None
     social: SocialStats
 
 
+class EntityItem(BaseModel):
+    name: str
+    sentiment: Optional[str] = None
+
 class Entities(BaseModel):
-    persons: List[str]
-    organizations: List[str]
-    locations: List[str]
+    persons: Optional[List[EntityItem]] = []
+    organizations: Optional[List[EntityItem]] = []
+    locations: Optional[List[EntityItem]] = []
 
 
 class Article(BaseModel):
     thread: Thread
     uuid: str
-    url: HttpUrl
+    url: Optional[str] = None
     ord_in_thread: int
-    parent_url: Optional[HttpUrl]
-    author: Optional[str]
-    published: datetime
+    parent_url: Optional[str] = None
+    author: Optional[str] = None
+    published: str
     title: str
     text: str
     highlightText: Optional[str] = None
@@ -62,24 +66,30 @@ class Article(BaseModel):
     highlightThreadTitle: Optional[str] = None
     language: str
     sentiment: Optional[str] = None
-    categories: List[str]
-    webz_reporter: bool
-    external_links: List[HttpUrl]
-    external_images: List[HttpUrl]
+    categories: Optional[List[str]] = None
+    webz_reporter: Optional[bool] = None
+    external_links: Optional[List[str]] = None
+    external_images: Optional[List[str]] = None
     entities: Entities
     rating: Optional[float] = None
-    crawled: datetime
-    updated: datetime
+    crawled: str
+    updated: str
 
 # Cleaned Data
 class ArticleMetadata(BaseModel):
-    url: Optional[HttpUrl]
-    author: Optional[str]
-    published: Optional[str]
-    site: Optional[str]
+    url: Optional[str] = None
+    author: Optional[str] = None
+    published: Optional[str] = None
+    site: Optional[str] = None
 
 class CleanedArticle(BaseModel):
     id: str
     title: str
     text: str
     metadata: ArticleMetadata
+
+# Retriever Ranked Result (RAW)
+class SearchResultItem(BaseModel):
+    text_snippet: str
+    title: Optional[str] = None
+    url: Optional[str] = None
