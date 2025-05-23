@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from app.api.services.data_cleaning import load_and_clean_all
+from app.api.services.embeddings import embed_articles
 from app.api.services.news_fetcher import fetch_top_headlines, fetch_everything, fetch_sources
 from app.tasks.daily_fetch import fetch_and_store_last_30_days
 from app.tasks.data_ingest import load_articles_from_directory
@@ -50,9 +52,10 @@ async def get_all_articles(
     )
 
 @app.on_event(event_type="startup")
-async def startup_event():
-    print("Starting scheduled fetch...")
-    await load_articles_from_directory()
+def startup_event():
+    print("Starting Data Ingestion...")
+    cleaned_articles = load_and_clean_all()
+    embed_articles(cleaned_articles)
 
 
 
