@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.api.services.data_cleaning import load_and_clean_all
 from app.api.services.embeddings import embed_articles
 from app.api.services.news_fetcher import fetch_top_headlines, fetch_everything, fetch_sources
+from app.api.services.query import get_by_query, search_chroma
 from app.tasks.daily_fetch import fetch_and_store_last_30_days
 from app.tasks.data_ingest import load_articles_from_directory
 
@@ -51,11 +52,17 @@ async def get_all_articles(
         page=page
     )
 
+@app.get("/query")
+async def query(query: str):
+    return await get_by_query(query=query)
+
+
 @app.on_event(event_type="startup")
 def startup_event():
     print("Starting Data Ingestion...")
     cleaned_articles = load_and_clean_all()
     embed_articles(cleaned_articles)
+
 
 
 
