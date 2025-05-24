@@ -9,3 +9,6 @@
 
 ### 3.Start Server
 ```uvicorn app.main:app --reload --host 0.0.0.0 --port 8000```
+
+### 4.Streamlit UI
+```streamlit run streamlit_app.py --server.port 8502 --server.address 0.0.0.0```

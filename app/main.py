@@ -61,6 +61,8 @@ async def query(query: str):
 def startup_event():
     print("Starting Data Ingestion...")
     cleaned_articles = load_and_clean_all()
+    if len(cleaned_articles) == 0:
+        return
     embed_articles(cleaned_articles)
 
 
