@@ -2,7 +2,7 @@ import re
 import uuid
 from typing import List, Tuple
 
-from app.core.config import COLLECTION_NAME
+from app.core.config import QA_COLLECTION_NAME
 from app.db.db_client import get_persist_chroma
 from app.models.news_dataset import Article, ArticleMetadata, CleanedArticle
 from app.tasks.data_ingest import load_articles_from_directory
@@ -55,7 +55,7 @@ def load_and_clean_all() -> List[CleanedArticle]:
     cleaned_data = []
     chroma = get_persist_chroma()
     collections = chroma.list_collections()
-    if COLLECTION_NAME in collections:
+    if QA_COLLECTION_NAME in collections:
         return cleaned_data
     articles = load_articles_from_directory()
     for article in articles:
