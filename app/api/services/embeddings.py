@@ -1,5 +1,6 @@
+import datetime
 from app.api.services.data_cleaning import prepare_documents_for_embedding, load_and_clean_all
-from app.core.config import COLLECTION_NAME
+from app.core.config import HISTORY_COLLECTION_NAME, QA_COLLECTION_NAME
 from app.db.db_client import get_in_mem_chroma, get_persist_chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
@@ -9,10 +10,10 @@ from app.models.news_dataset import CleanedArticle
 from itertools import islice
 
 chroma_client = get_persist_chroma()
-# collection = chroma_client.get_or_create_collection(name="news_articles")
-def get_Vectorstore():
+
+def get_Vectorstore(collection_name: str):
     vector_store = Chroma(
-        collection_name = COLLECTION_NAME,
+        collection_name = collection_name,
         embedding_function = get_embedding_model(),
         client = chroma_client
     )
@@ -39,7 +40,7 @@ def embed_articles(cleaned_articles: list[CleanedArticle]):
         print("No valid articles to embed.")
         return
 
-    vector_store = get_Vectorstore()
+    vector_store = get_Vectorstore(QA_COLLECTION_NAME)
 
     docs = [
         Document(page_content=doc, metadata=meta)
@@ -53,11 +54,19 @@ def embed_articles(cleaned_articles: list[CleanedArticle]):
     print(f"Embedded and stored {len(documents)} articles in Chroma via vector_store.")
 
 def get_retriever():
-    retriever = Chroma(
-        collection_name = COLLECTION_NAME,
-        embedding_function = get_embedding_model(),
-        client = chroma_client
-    ).as_retriever(search_kwargs={"k": 5}, return_source_documents=True)
+    qa_vactorstore = get_Vectorstore(QA_COLLECTION_NAME)
+    retriever = qa_vactorstore.as_retriever(search_kwargs={"k": 5}, return_source_documents=True)
 
     return retriever
 
+def embed_history(conversation_id: str, question: str, answer: str):
+    doc_text = f"Q: {question}\nA: {answer}"
+    metadata = {
+        "conversation_id": conversation_id,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+    history_vectorstore = get_Vectorstore(HISTORY_COLLECTION_NAME)
+    doc = Document(page_content=doc_text, metadata=metadata)
+    history_vectorstore.add_documents([doc])
+    print(f"Stored Q&A history in Chroma for conversation_id={conversation_id}")

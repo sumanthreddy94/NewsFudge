@@ -1,11 +1,12 @@
 from app.api.services.embeddings import get_embedding_model
+from app.core.config import QA_COLLECTION_NAME
 from app.db.db_client import get_in_mem_chroma
 from app.llm.llm_client import get_retrieval_chain
 from app.models.news_dataset import SearchResultItem
 
 embedding_model = get_embedding_model()
 chroma_client = get_in_mem_chroma()
-collection = chroma_client.create_collection(name="news_articles")
+collection = chroma_client.create_collection(name=QA_COLLECTION_NAME)
 
 # Gets Only Raw Matching Data
 async def search_chroma(query: str, top_k: int = 3):
@@ -29,6 +30,7 @@ async def search_chroma(query: str, top_k: int = 3):
 async def get_by_query(query: str):
     retrieval_chain = get_retrieval_chain()
     result = await retrieval_chain.ainvoke({"input": query})
+    
     return result
 
 

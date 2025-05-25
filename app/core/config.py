@@ -8,4 +8,5 @@ DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "us")
 DEFAULT_CATEGORY = os.getenv("DEFAULT_CATEGORY", "technology")
 DATASET_PATH = os.getenv("DATASET_PATH")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-COLLECTION_NAME = "news_articles"
+QA_COLLECTION_NAME = "news_articles"
+HISTORY_COLLECTION_NAME = "qa_conversations"
