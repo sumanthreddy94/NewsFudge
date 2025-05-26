@@ -8,6 +8,7 @@ class QA(BaseModel):
     question: str
     answer: str
     created_at: datetime
+    urls: Optional[List[str]] = []
 
 class Conversation(BaseModel):
     id: str

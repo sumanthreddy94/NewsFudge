@@ -27,7 +27,7 @@ async def update_conversation(convo_id: str, new_qa: QA):
     convo = await get_conversation_by_id(convo_id)
     if not convo:
         return None
-    convo.qa_list.append(new_qa)  # Use dot notation instead of dict syntax
+    convo.qa_list.append(new_qa)
     # Delete old and re-add
     collection.delete(ids=[convo_id])
     collection.add(
