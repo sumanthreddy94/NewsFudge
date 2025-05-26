@@ -1,4 +1,5 @@
 import datetime
+
 import streamlit as st
 import requests
 import uuid
@@ -77,6 +78,11 @@ if st.session_state.conversation_id:
         st.markdown(f"**Q:** {qa['question']}")
         st.markdown(f"**A:** {qa['answer']}")
         st.markdown("---")
+        if "urls" in qa and qa["urls"]:
+            st.markdown("**Sources:**")
+            for url in qa["urls"]:
+                st.markdown(f"- [{url}]({url})")
+
 
 # 🔽 Bottom: Ask new question
 st.markdown("## Ask a question")
@@ -86,11 +92,18 @@ if st.button("🔍 Search"):
         try:
             res = requests.get(f"{API_URL}/query", params={"query": query})
             res.raise_for_status()
-            answer = res.json()["answer"]
-
+            answer_full = res.json()
+            urls = []
+            answer = answer_full["answer"]
+            context_list = answer_full["context"]
+            for context in context_list:
+                metadata = context["metadata"]
+                url = metadata["url"]
+                urls.append(url)
             qa_payload = {
                 "question": query,
                 "answer": answer,
+                "urls": urls,
                 "created_at": datetime.datetime.now().isoformat()
             }
             post_res = requests.post(f"{API_URL}/question/{st.session_state.conversation_id}", json=qa_payload)

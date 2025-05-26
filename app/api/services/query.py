@@ -30,7 +30,7 @@ async def search_chroma(query: str, top_k: int = 3):
 async def get_by_query(query: str):
     retrieval_chain = get_retrieval_chain()
     result = await retrieval_chain.ainvoke({"input": query})
-    
+    print(f"[QUERY] Query Result: {result}")
     return result
 
 
