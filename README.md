@@ -1,5 +1,12 @@
 # NewsFudge
 
+## Architecture Overview
+
+The system integrates a Streamlit frontend and a FastAPI backend to enable interactive question answering and summarization of current events using Retrieval-Augmented Generation (RAG). The backend leverages OpenAI models, LangChain, and a persistent Chroma vector store.
+
+![Architecture Diagram](/NewsFudge.png)
+## Installation & Setup Instructions
+
 ### 1.Create and Activate Virtual Environment
 ```source venv/bin/activate```
 ```python3 -m venv venv```
