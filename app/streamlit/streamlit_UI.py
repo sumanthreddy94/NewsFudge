@@ -48,20 +48,26 @@ if not st.session_state.conversations_list:
 
 st.title("🗞️ NewsFudge AI")
 
-# 🔼 Top Row: Dropdown + Button
-col1, col2 = st.columns([6, 2])
-with col1:
-    if st.session_state.conversations_list:
-        titles = [c["title"] for c in st.session_state.conversations_list]
-        selected_title = st.selectbox("Select Conversation", titles)
-        selected_convo = next(c for c in st.session_state.conversations_list if c["title"] == selected_title)
-        st.session_state.conversation_id = selected_convo["id"]
-    else:
-        st.warning("No conversations available.")
+st.markdown("### 💬 Manage Conversations")
 
-with col2:
-    if st.button("➕ New Conversation"):
-        create_conversation()
+# ➕ Button at the top
+if st.button("➕ Start a New Conversation", use_container_width=True):
+    create_conversation()
+
+# Dropdown below the button
+if st.session_state.conversations_list:
+    titles = [c["title"] for c in st.session_state.conversations_list]
+    selected_title = st.selectbox(
+        "Select an existing conversation",
+        titles,
+        key="conversation_select",
+        help="Pick a conversation to continue",
+    )
+    selected_convo = next(c for c in st.session_state.conversations_list if c["title"] == selected_title)
+    st.session_state.conversation_id = selected_convo["id"]
+else:
+    st.info("No conversations yet. Click above to create one.")
+
 
 # 📜 Show Q/A for selected conversation
 if st.session_state.conversation_id:
